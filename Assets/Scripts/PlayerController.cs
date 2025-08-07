@@ -5,17 +5,22 @@ using UnityEngine.Animations;
 
 public class PlayerController : MonoBehaviour
 {
+    public static bool inAttack;
+    bool inDefend;
+    bool inDamage;
+
     [SerializeField] float moveSpeed = 5.0f;
     [SerializeField] float sprintSpeed = 10.0f;
+    [SerializeField] float jumpHeight = 5.0f;
+    [SerializeField] float groundCheckDistance = 0.1f;
 
     Rigidbody rb;
     Animator anime;
     Quaternion targetRotation;
 
     float speed;
+    bool isGrounded;
     Vector3 move;
-
-    bool inDamage;
 
     // Start is called before the first frame update
     void Start()
@@ -34,23 +39,63 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (inDamage) return;
+        if (inAttack || inDamage) return;
 
-        speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : moveSpeed;
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            speed = sprintSpeed;
+            anime.SetBool("Sprint", true);
+
+        }
+        else
+        {
+            speed = moveSpeed;
+            anime.SetBool("Sprint", false);
+        }
+
         float axisH = Input.GetAxisRaw("Horizontal");
         float axisV = Input.GetAxisRaw("Vertical");
+        float rotationSpeed = 600 * Time.deltaTime;
         Quaternion axisRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
         move = axisRotation * new Vector3(axisH, 0, axisV).normalized;
-        float rotationSpeed = 600 * Time.deltaTime;
 
-        if (move != Vector3.zero)
+        if (!inDefend)
         {
-            targetRotation = Quaternion.LookRotation(move);
+            if (move != Vector3.zero)
+            {
+                targetRotation = Quaternion.LookRotation(move);
+            }
+
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed);
         }
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed);
 
         anime.SetBool("Move", move.sqrMagnitude > 0);
-        anime.SetFloat("Speed", Mathf.Clamp(move.sqrMagnitude * speed, 0, speed));
+        anime.SetFloat("MoveX", axisH);
+        anime.SetFloat("MoveZ", axisV);
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            float jumpVelocity = Mathf.Sqrt(jumpHeight * Mathf.Abs(Physics.gravity.y));
+            rb.velocity = new Vector3(rb.velocity.x, jumpVelocity, rb.velocity.z);
+        }
+
+        anime.SetBool("Ground", isGrounded);
+
+        if (Input.GetButtonDown("Fire1") && isGrounded)
+        {
+            anime.SetTrigger("Attack");
+        }
+
+        if (Input.GetButton("Fire2") && isGrounded)
+        {
+            inDefend = true;
+        }
+        else if (Input.GetButtonUp("Fire2") || !isGrounded)
+        {
+            inDefend = false;
+        }
+
+        anime.SetBool("Defend", inDefend);
     }
 
     void FixedUpdate()
@@ -60,9 +105,11 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (inDamage) return;
+        if (inAttack || inDamage) return;
 
         Vector3 velocity = move * speed;
         rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
+
+        isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f);
     }
 }
