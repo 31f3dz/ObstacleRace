@@ -5,6 +5,7 @@ using UnityEngine;
 public enum GameState
 {
     playing,
+    gameover,
 }
 
 public class GameController : MonoBehaviour

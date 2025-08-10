@@ -1883,7 +1883,7 @@ GameObject:
   - component: {fileID: 8815632061751426622}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1991,6 +1991,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8591106c2e5940446940aba8008f94de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  effectHit: {fileID: 2623689613105081810, guid: 8bff1302dedd003498e3e67ac77381f4, type: 3}
+  hp: 3
   moveSpeed: 5
   sprintSpeed: 10
   jumpHeight: 5
@@ -2902,8 +2904,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.1850583, y: 1.0151058, z: 0.036941487}
-  m_Center: {x: 0.0017515693, y: 0.69771165, z: 0.0015350288}
+  m_Size: {x: 0.1850583, y: 1.1860511, z: 0.036941487}
+  m_Center: {x: 0.0017515752, y: 0.78318644, z: 0.0015350658}
 --- !u!114 &6329232300161905740
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -8,7 +9,10 @@ public class PlayerController : MonoBehaviour
     public static bool inAttack;
     bool inDefend;
     bool inDamage;
+    bool isDead;
 
+    [SerializeField] GameObject effectHit;
+    [SerializeField] int hp = 3;
     [SerializeField] float moveSpeed = 5.0f;
     [SerializeField] float sprintSpeed = 10.0f;
     [SerializeField] float jumpHeight = 5.0f;
@@ -111,5 +115,37 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
 
         isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Damage") && !inDamage && !isDead)
+        {
+            inDamage = true;
+            hp--;
+
+            if (hp <= 0)
+            {
+                isDead = true;
+                anime.SetTrigger("Dead");
+                GameController.gameState = GameState.gameover;
+            }
+            else
+            {
+                anime.SetTrigger("Damage");
+            }
+
+            StartCoroutine(InDamage());
+
+            Vector3 midPoint = (transform.position + collision.transform.position) / 2.0f;
+            Instantiate(effectHit, midPoint, Quaternion.identity);
+        }
+    }
+
+    IEnumerator InDamage()
+    {
+        yield return new WaitForSeconds(0.5f);
+        anime.ResetTrigger("Damage");
+        inDamage = false;
     }
 }
