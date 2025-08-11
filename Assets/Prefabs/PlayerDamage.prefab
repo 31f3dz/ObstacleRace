@@ -14317,7 +14317,7 @@ GameObject:
   - component: {fileID: 3266480387057617645}
   - component: {fileID: 1465526874337207541}
   m_Layer: 0
-  m_Name: PlayerHit
+  m_Name: PlayerDamage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

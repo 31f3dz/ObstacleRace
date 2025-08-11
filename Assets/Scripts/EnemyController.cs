@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    //bool inAttack;
     bool isAttack;
+    bool inAttack;
     bool inDamage;
     bool isDead;
 
@@ -14,24 +15,33 @@ public class EnemyController : MonoBehaviour
     [SerializeField] GameObject effectExplosion;
     [SerializeField] int hp = 3;
 
+    GameObject target;
+    NavMeshAgent agent;
     Animator anime;
 
     // Start is called before the first frame update
     void Start()
     {
+        target = GameObject.FindGameObjectWithTag("Player");
+        agent = GetComponent<NavMeshAgent>();
         anime = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!isDead && hp <= 0)
+        if (GameController.gameState != GameState.playing)
         {
-            isDead = true;
-            anime.SetTrigger("Dead");
-            StartCoroutine(IsDead());
+            return;
         }
-        else
+
+        if (inAttack || inDamage || isDead) return;
+
+        agent.SetDestination(target.transform.position);
+        anime.SetBool("Move", agent.velocity.sqrMagnitude > 0);
+
+        float distance = Vector3.Distance(target.transform.position, transform.position);
+        if (distance <= agent.stoppingDistance)
         {
             if (!isAttack) StartCoroutine(IsAttack());
         }
@@ -43,7 +53,18 @@ public class EnemyController : MonoBehaviour
         {
             inDamage = true;
             hp--;
-            anime.SetTrigger("Damage");
+
+            if (hp <= 0)
+            {
+                isDead = true;
+                anime.SetTrigger("Dead");
+                StartCoroutine(IsDead());
+            }
+            else
+            {
+                anime.SetTrigger("Damage");
+            }
+
             StartCoroutine(InDamage());
 
             Vector3 midPoint = (transform.position + other.transform.position) / 2.0f;
@@ -61,18 +82,19 @@ public class EnemyController : MonoBehaviour
 
     IEnumerator InAttack()
     {
-        //inAttack = true;
+        inAttack = true;
         anime.SetTrigger("Attack");
         weapon.enabled = true;
         yield return new WaitForSeconds(0.5f);
 
-        //inAttack = false;
         weapon.enabled = false;
+        inAttack = false;
     }
 
     IEnumerator InDamage()
     {
         yield return new WaitUntil(() => PlayerController.inAttack == false);
+        anime.ResetTrigger("Damage");
         inDamage = false;
     }
 

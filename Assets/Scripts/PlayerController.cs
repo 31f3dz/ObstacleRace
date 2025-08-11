@@ -7,11 +7,12 @@ using UnityEngine.Animations;
 public class PlayerController : MonoBehaviour
 {
     public static bool inAttack;
-    bool inDefend;
+    public static bool inDefend;
     bool inDamage;
     bool isDead;
 
-    [SerializeField] GameObject effectHit;
+    [SerializeField] GameObject effectDefend;
+    [SerializeField] GameObject effectDamage;
     [SerializeField] int hp = 3;
     [SerializeField] float moveSpeed = 5.0f;
     [SerializeField] float sprintSpeed = 10.0f;
@@ -43,7 +44,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (inAttack || inDamage) return;
+        if (inAttack || inDamage || isDead) return;
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -121,21 +122,35 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Damage") && !inDamage && !isDead)
         {
-            inDamage = true;
-            hp--;
+            GameObject effectHit;
 
-            if (hp <= 0)
+            if (Shield.isHit)
             {
-                isDead = true;
-                anime.SetTrigger("Dead");
-                GameController.gameState = GameState.gameover;
+                anime.SetTrigger("Guard");
+                effectHit = effectDefend;
             }
             else
             {
-                anime.SetTrigger("Damage");
-            }
+                inDefend = false;
+                anime.SetBool("Defend", inDefend);
 
-            StartCoroutine(InDamage());
+                inDamage = true;
+                hp--;
+
+                if (hp <= 0)
+                {
+                    isDead = true;
+                    anime.SetTrigger("Dead");
+                    GameController.gameState = GameState.gameover;
+                }
+                else
+                {
+                    anime.SetTrigger("Damage");
+                }
+
+                StartCoroutine(InDamage());
+                effectHit = effectDamage;
+            }
 
             Vector3 midPoint = (transform.position + collision.transform.position) / 2.0f;
             Instantiate(effectHit, midPoint, Quaternion.identity);
