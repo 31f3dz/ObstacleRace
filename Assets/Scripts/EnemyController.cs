@@ -1,30 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    bool isAttack;
     bool inAttack;
     bool inDamage;
     bool isDead;
+    bool night;
 
     [SerializeField] BoxCollider weapon;
+    [SerializeField] Light nightLight;
     [SerializeField] GameObject effectHit;
     [SerializeField] GameObject effectExplosion;
     [SerializeField] int hp = 3;
 
-    GameObject target;
-    NavMeshAgent agent;
     Animator anime;
+    Vector3 defaultPos;
+    Quaternion defaultRot;
 
     // Start is called before the first frame update
     void Start()
     {
-        target = GameObject.FindGameObjectWithTag("Player");
-        agent = GetComponent<NavMeshAgent>();
         anime = GetComponent<Animator>();
+        defaultPos = transform.position;
+        defaultRot = transform.rotation;
     }
 
     // Update is called once per frame
@@ -35,16 +36,11 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
+        if (DayNightController.night && !night) Night();
+        else if (!DayNightController.night && night) Day();
+        night = DayNightController.night;
+
         if (inAttack || inDamage || isDead) return;
-
-        agent.SetDestination(target.transform.position);
-        anime.SetBool("Move", agent.velocity.sqrMagnitude > 0);
-
-        float distance = Vector3.Distance(target.transform.position, transform.position);
-        if (distance <= agent.stoppingDistance)
-        {
-            if (!isAttack) StartCoroutine(IsAttack());
-        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -72,15 +68,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    IEnumerator IsAttack()
-    {
-        isAttack = true;
-        yield return StartCoroutine(InAttack());
-        yield return new WaitForSeconds(5);
-        isAttack = false;
-    }
-
-    IEnumerator InAttack()
+    public IEnumerator InAttack()
     {
         inAttack = true;
         anime.SetTrigger("Attack");
@@ -103,5 +91,23 @@ public class EnemyController : MonoBehaviour
         yield return new WaitForSeconds(1);
         Instantiate(effectExplosion, transform.position, Quaternion.Euler(-90, 0, 0));
         Destroy(gameObject);
+    }
+
+    public void Retry()
+    {
+        transform.position = defaultPos;
+        transform.rotation = defaultRot;
+        anime.Rebind();
+        anime.Update(0);
+    }
+
+    void Night()
+    {
+        nightLight.enabled = true;
+    }
+
+    void Day()
+    {
+        nightLight.enabled = false;
     }
 }
