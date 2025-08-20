@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,11 +14,11 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject effectDefend;
     [SerializeField] GameObject effectDamage;
+    [SerializeField] Slider hpSlider;
     [SerializeField] int hp = 3;
     [SerializeField] float moveSpeed = 5.0f;
     [SerializeField] float sprintSpeed = 10.0f;
     [SerializeField] float jumpHeight = 5.0f;
-    [SerializeField] float groundCheckDistance = 0.1f;
     [SerializeField] float fallLimit = -30.0f;
 
     Rigidbody rb;
@@ -31,9 +32,10 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        hpSlider.maxValue = hp;
+
         rb = GetComponent<Rigidbody>();
         anime = GetComponent<Animator>();
-
         targetRotation = transform.rotation;
     }
 
@@ -122,7 +124,7 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = move * speed;
         rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
 
-        isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance + 0.1f);
+        isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, 0.2f);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -143,6 +145,7 @@ public class PlayerController : MonoBehaviour
 
                 inDamage = true;
                 hp--;
+                hpSlider.value = hp;
 
                 if (hp <= 0)
                 {
@@ -179,6 +182,7 @@ public class PlayerController : MonoBehaviour
     public void Retry()
     {
         if (hp <= 0) hp = 1;
+        hpSlider.value = hp;
 
         transform.position = GameController.retryPos;
         transform.rotation = targetRotation = Quaternion.identity;

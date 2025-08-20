@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] Light nightLight;
     [SerializeField] GameObject effectHit;
     [SerializeField] GameObject effectExplosion;
+    [SerializeField] Slider hpSlider;
     [SerializeField] int hp = 3;
 
     Animator anime;
@@ -23,6 +25,8 @@ public class EnemyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        hpSlider.maxValue = hp;
+
         anime = GetComponent<Animator>();
         defaultPos = transform.position;
         defaultRot = transform.rotation;
@@ -35,6 +39,8 @@ public class EnemyController : MonoBehaviour
         {
             return;
         }
+
+        hpSlider.transform.parent.rotation = Camera.main.transform.rotation;
 
         if (DayNightController.night && !night) Night();
         else if (!DayNightController.night && night) Day();
@@ -49,6 +55,7 @@ public class EnemyController : MonoBehaviour
         {
             inDamage = true;
             hp--;
+            hpSlider.value = hp;
 
             if (hp <= 0)
             {

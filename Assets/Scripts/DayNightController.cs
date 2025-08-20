@@ -11,6 +11,8 @@ public class DayNightController : MonoBehaviour
     [SerializeField] Material daySkybox;
     [SerializeField] Material nightSkybox;
     [SerializeField] Material emission;
+    [SerializeField] DayNightTimer dayNightTimer;
+    [SerializeField] float switchingTime = 5.0f;
 
     Color32 defaultColor = new Color32(255, 244, 214, 25);
     //Vector3 euler;
@@ -26,6 +28,8 @@ public class DayNightController : MonoBehaviour
         //switching = true;
         //Night();
         //StartCoroutine(doneSwitching());
+
+        dayNightTimer.SwitchingIcon(night);
     }
 
     // Update is called once per frame
@@ -39,7 +43,9 @@ public class DayNightController : MonoBehaviour
             if (night) Night();
             else Day();
 
-            StartCoroutine(doneSwitching());
+            StartCoroutine(doneSwitching(switchingTime));
+            dayNightTimer.SetTimer(switchingTime);
+            dayNightTimer.SwitchingIcon(night);
         }
     }
 
@@ -69,9 +75,9 @@ public class DayNightController : MonoBehaviour
         emission.color = defaultColor;
     }
 
-    IEnumerator doneSwitching()
+    IEnumerator doneSwitching(float coolTime)
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(coolTime);
         switching = false;
 
         Debug.Log("昼夜の切り替えが可能になった");
