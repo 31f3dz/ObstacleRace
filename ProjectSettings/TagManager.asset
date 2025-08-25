@@ -9,6 +9,9 @@ TagManager:
   - Damage
   - FxTemporaire
   - Defend
+  - Goal
+  - RotatingBlock
+  - MovingBlock
   layers:
   - Default
   - TransparentFX

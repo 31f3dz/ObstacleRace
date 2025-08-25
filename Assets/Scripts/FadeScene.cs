@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class FadeScene : MonoBehaviour
@@ -23,7 +24,7 @@ public class FadeScene : MonoBehaviour
         
     }
 
-    public IEnumerator FadeOut(float fadeTime)
+    public IEnumerator FadeOut(float fadeTime, bool isFade)
     {
         fadeImage.enabled = true;
         float elapsedTime = 0.0f;
@@ -37,7 +38,15 @@ public class FadeScene : MonoBehaviour
         }
 
         fadeImage.color = endColor;
-        yield return StartCoroutine(FadeIn(fadeTime));
+
+        if (isFade)
+        {
+            yield return StartCoroutine(FadeIn(fadeTime));
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     IEnumerator FadeIn(float fadeTime)

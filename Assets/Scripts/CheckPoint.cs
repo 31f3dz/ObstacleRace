@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class CheckPoint : MonoBehaviour
 {
+    bool isCheck;
+
     [SerializeField] Vector3 checkPointPos = new Vector3(0, Vector3.up.y, 20);
+    [SerializeField] GameObject MessagePanel;
 
     // Start is called before the first frame update
     void Start()
@@ -20,7 +24,20 @@ public class CheckPoint : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        GameController.retryPos = checkPointPos;
-        Debug.Log("チェックポイントに到達");
+        if (!isCheck)
+        {
+            isCheck = true;
+
+            GameController.retryPos = checkPointPos;
+            MessagePanel.SetActive(true);
+
+            StartCoroutine(MessageFade());
+        }
+    }
+
+    IEnumerator MessageFade()
+    {
+        yield return new WaitForSeconds(2);
+        MessagePanel.SetActive(false);
     }
 }

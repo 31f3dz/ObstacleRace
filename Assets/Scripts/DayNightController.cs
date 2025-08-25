@@ -20,7 +20,12 @@ public class DayNightController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        night = false;
+
         emission.color = defaultColor;
+        dayNightTimer.SwitchingIcon(night);
+
+        DynamicGI.UpdateEnvironment();
 
         //euler = directionalLight.transform.eulerAngles;
 
@@ -28,14 +33,17 @@ public class DayNightController : MonoBehaviour
         //switching = true;
         //Night();
         //StartCoroutine(doneSwitching());
-
-        dayNightTimer.SwitchingIcon(night);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.C) && !switching)
+        if (GameController.gameState != GameState.playing)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.C) && !switching)
         {
             night = !night;
             switching = true;
@@ -79,7 +87,5 @@ public class DayNightController : MonoBehaviour
     {
         yield return new WaitForSeconds(coolTime);
         switching = false;
-
-        Debug.Log("昼夜の切り替えが可能になった");
     }
 }

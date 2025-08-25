@@ -5,17 +5,20 @@ using UnityEngine;
 public enum GameState
 {
     playing,
+    pause,
+    gameclear,
     gameover,
     fade,
 }
 
 public class GameController : MonoBehaviour
 {
+    bool isClear;
     bool isOver;
     bool isFade;
 
     public static GameState gameState;
-    public static Vector3 retryPos = Vector3.up;
+    public static Vector3 retryPos;
 
     [SerializeField] FadeScene fadeScene;
     [SerializeField] float fadeTime = 0.5f;
@@ -27,6 +30,7 @@ public class GameController : MonoBehaviour
     void Start()
     {
         gameState = GameState.playing;
+        retryPos = Vector3.up;
 
         player = GameObject.FindGameObjectWithTag("Player");
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -35,20 +39,31 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameState == GameState.gameover && !isOver)
+        if (gameState == GameState.gameclear && !isClear)
+        {
+            isClear = true;
+
+            StartCoroutine(GameClear());
+        }
+        else if (gameState == GameState.gameover && !isOver)
         {
             isOver = true;
 
             StartCoroutine(GameOver());
         }
-
-        if (gameState == GameState.fade && !isFade)
+        else if (gameState == GameState.fade && !isFade)
         {
             isFade = true;
 
-            StartCoroutine(fadeScene.FadeOut(fadeTime));
+            StartCoroutine(fadeScene.FadeOut(fadeTime, isFade));
             StartCoroutine(Fade(fadeTime));
         }
+    }
+
+    IEnumerator GameClear()
+    {
+        yield return new WaitForSeconds(2.0f);
+        StartCoroutine(fadeScene.FadeOut(fadeTime * 2, isFade));
     }
 
     IEnumerator GameOver()

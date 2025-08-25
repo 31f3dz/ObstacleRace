@@ -167,6 +167,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Goal"))
+        {
+            transform.LookAt(Camera.main.transform);
+            anime.SetTrigger("Goal");
+            GameController.gameState = GameState.gameclear;
+        }
+    }
+
     IEnumerator InDamage()
     {
         yield return new WaitForSeconds(0.5f);
