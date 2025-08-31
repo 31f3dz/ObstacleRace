@@ -12,7 +12,7 @@ public class DayNightController : MonoBehaviour
     [SerializeField] Material nightSkybox;
     [SerializeField] Material emission;
     [SerializeField] DayNightTimer dayNightTimer;
-    [SerializeField] float switchingTime = 5.0f;
+    [SerializeField] float switchingTime = 3.0f;
 
     Color32 defaultColor = new Color32(255, 244, 214, 25);
     //Vector3 euler;

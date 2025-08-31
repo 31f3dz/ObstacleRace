@@ -49,4 +49,4 @@ MonoBehaviour:
   nightSkybox: {fileID: 2100000, guid: 79fbfe4c07ce0dc4485f249aefcb1558, type: 2}
   emission: {fileID: 2100000, guid: d41260ee5aaacc943ad664dc9cf22194, type: 2}
   dayNightTimer: {fileID: 0}
-  switchingTime: 5
+  switchingTime: 3

@@ -7,6 +7,7 @@ public class MovingBlock : MonoBehaviour
     bool isMove = true; // 移動可能フラグ
     bool isReverse; // 方向反転フラグ
 
+    [SerializeField] bool isObstacle;
     [SerializeField] Vector3 move = new Vector3(-15.0f, 2.0f, 15.0f); // 移動距離
     [SerializeField] float time = 3.0f; // 移動時間
     [SerializeField] float wait = 1.0f; // 到着～方向反転のインターバル
@@ -64,7 +65,7 @@ public class MovingBlock : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (!isObstacle && collision.gameObject.CompareTag("Player"))
         {
             collision.transform.SetParent(transform);
         }
@@ -72,7 +73,7 @@ public class MovingBlock : MonoBehaviour
 
     void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (!isObstacle && collision.gameObject.CompareTag("Player"))
         {
             collision.transform.SetParent(null);
         }

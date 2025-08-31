@@ -45,7 +45,7 @@ public class FadeScene : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            SceneManager.LoadScene("Title");
         }
     }
 
