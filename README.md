@@ -130,7 +130,7 @@ Vector3 RandomNavMeshLocation(float radius)
 ![タイトル画面でゲーム性を表現](readmeImg/readmeImg_09.png)  
 タイトル画面でいずれかのキーを押すとステージ画面へ進みますが、何もせずに放置していると昼と夜が少しずつ移り変わるようにしました。Directional Lightを回転させたり、昼と夜のSkyboxを線形補間させたりして、お遊び要素ながらもゲーム性を簡単に伝えられるよう工夫しました。
 
-EnemyAI.csの抜粋
+SkyboxLerp.csの抜粋
 ```C#
 [SerializeField] Light directionalLight;
 
